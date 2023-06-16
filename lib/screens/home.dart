@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_nullable_for_final_variable_declarations, unused_import, unused_local_variable
 
 import 'dart:io';
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,11 +27,40 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, String>> contactList = [];
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  Timer? _timer;
+  int _durationInSeconds = 15; // Timer duration in seconds
 
   @override
   void initState() {
     super.initState();
     fetchChatContacts();
+    startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the timer to avoid memory leaks
+    super.dispose();
+  }
+
+  void startTimer() {
+    _timer = Timer(Duration(seconds: _durationInSeconds), () {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Take a Break'),
+          content: Text('It seems like you\'ve been enjoying our app for 15 minutes straight! We encourage you to take a moment to rest and recharge. Remember, a healthy balance is key to a productive and enjoyable experience. Feel free to resume your activities once you\'re ready. Thank you for using our app!'),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Future<void> fetchChatContacts() async {
