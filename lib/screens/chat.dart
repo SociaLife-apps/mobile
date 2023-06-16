@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart' as notifications;
+import 'package:timezone/timezone.dart' as tz;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialife_mobile/controllers/chat_controller.dart';
 import 'package:socialife_mobile/controllers/message_controller.dart';
@@ -23,12 +25,50 @@ class _ChatScreenState extends State<ChatScreen> {
   List<Map<String, String>> messageList = [];
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  notifications.FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  notifications.FlutterLocalNotificationsPlugin();
 
   var data = Get.arguments;
+
+  Future<void> initializeNotifications() async {
+    const notifications.AndroidInitializationSettings initializationSettingsAndroid =
+    notifications.AndroidInitializationSettings('app_icon');
+    final notifications.InitializationSettings initializationSettings =
+    notifications.InitializationSettings(android: initializationSettingsAndroid);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+
+  Future<void> scheduleNotification() async {
+    const notifications.AndroidNotificationDetails androidPlatformChannelSpecifics =
+    notifications.AndroidNotificationDetails(
+      'channel_id',
+      'channel_name',
+      importance: notifications.Importance.max,
+      priority: notifications.Priority.high,
+      ticker: 'ticker',
+    );
+
+    const notifications.NotificationDetails platformChannelSpecifics =
+    notifications.NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      0,
+      'Reminder',
+      'Hey, It\'s been a while since you last reached out to one of your friend. Why not take a moment today to reconnect and catch up? A simple message can make a big difference in nurturing your friendship. Don\'t let more time slip away—reach out and show them you care.',
+      tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+      platformChannelSpecifics,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+      notifications.UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
 
   @override
   void initState() {
     super.initState();
+    initializeNotifications();
     fetchMessages();
   }
 
@@ -36,6 +76,17 @@ class _ChatScreenState extends State<ChatScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     List<Message> messages = await messageController.getMessages(data[0]);
+
+    if (messages.isNotEmpty) {
+      Message lastMessage = messages.last;
+      DateTime lastMessageTime = lastMessage.createdAt;
+      DateTime now = DateTime.now();
+      Duration difference = now.difference(lastMessageTime);
+
+      if (difference.inSeconds > 15) {
+        await scheduleNotification();
+      }
+    }
 
     for (Message message in messages) {
       String text = message.text;
@@ -60,7 +111,12 @@ class _ChatScreenState extends State<ChatScreen> {
     String? senderId = prefs.getString('_id');
 
     await messageController.addMessage(data[0], senderId);
+
+    // Store the current time as the last contact time for the friend
+    final String lastContactKey = 'last_contact_${data[0]}';
+    prefs.setString(lastContactKey, DateTime.now().toIso8601String());
   }
+
 
   @override
   Widget build(BuildContext context) {
