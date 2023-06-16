@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_nullable_for_final_variable_declarations, prefer_const_constructors
+// ignore_for_file: unnecessary_nullable_for_final_variable_declarations, prefer_const_constructors, avoid_print
 
 import 'dart:convert';
 
@@ -26,22 +26,22 @@ class LoginController extends GetxController {
       };
       http.Response response =
           await http.post(url, body: jsonEncode(body), headers: headers);
+
       if (response.statusCode == 200) {
+
         final json = jsonDecode(response.body);
-        if (json['user']['__v'] == 0) {
-          var user = json['user'];
-          
-          final SharedPreferences? prefs = await _prefs;
 
-          await prefs?.setString('username', user['username']);
-          await prefs?.setString('_id', user['_id']);
+        var user = json['user'];
 
-          usernameController.clear();
-          passwordController.clear();
-          Get.off(HomeScreen());
-        } else {
-          throw jsonDecode(response.body)["message"] ?? "Unknown error ocured";
-        }
+        final SharedPreferences? prefs = await _prefs;
+
+        await prefs?.setString('username', user['username']);
+        await prefs?.setString('_id', user['_id']);
+
+        usernameController.clear();
+        passwordController.clear();
+
+        Get.off(HomeScreen());
       } else {
         throw jsonDecode(response.body)["message"] ?? "Unknown error ocured";
       }

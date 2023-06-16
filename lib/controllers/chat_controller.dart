@@ -10,7 +10,6 @@ import 'package:http/http.dart' as http;
 // import 'package:socialife_mobile/models/chat_model.dart';
 
 class ChatController extends GetxController {
-  RxList<Chat> chats = RxList<Chat>([]);
 
   Future createChat(String senderId, receiverId) async {
     try {
@@ -41,7 +40,6 @@ class ChatController extends GetxController {
   }
 
   Future userChats(String uid) async {
-    
     try {
       var headers = {'Content-Type': 'application/json'};
       var url = Uri.parse(
@@ -52,8 +50,6 @@ class ChatController extends GetxController {
       if (response.statusCode == 200) {
         List<Chat> chatList = chatFromJson(response.body);
 
-        // List<dynamic> json = jsonDecode(response.body);
-        // List<String>? idList = json.map((item) => item['_id']).cast<String>().toList();
         return chatList;
       } else {
         throw jsonDecode(response.body)["message"] ?? "Unknown error ocured";

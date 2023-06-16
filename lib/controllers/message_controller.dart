@@ -4,10 +4,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:socialife_mobile/models/message_model.dart';
 import 'package:socialife_mobile/utils/api_endpoints.dart';
 import 'package:http/http.dart' as http;
 
 class MessageController extends GetxController {
+  RxList<Message> messages = RxList<Message>([]);
   TextEditingController addMessageController = TextEditingController();
 
   Future getMessages(String chatId) async {
@@ -20,14 +22,15 @@ class MessageController extends GetxController {
       http.Response response = await http.get(url, headers: headers);
 
       if (response.statusCode == 200) {
-        // final json = jsonDecode(response.body);
-        
-        List<dynamic> json = jsonDecode(response.body);
-        List<String>? messageList =
-            json.map((item) => item['text']).cast<String>().toList();
+        List<Message> messageList = messageFromJson(response.body);
+
+        // List<dynamic> json = jsonDecode(response.body);
+        // List<String>? messageList =
+        //     json.map((item) => item['text']).cast<String>().toList();
 
         return messageList;
-
+      } else {
+        throw jsonDecode(response.body)['message'] ?? "Unknown error ocured";
       }
     } catch (e) {
       Get.back();
@@ -43,7 +46,7 @@ class MessageController extends GetxController {
     }
   }
 
-  Future addMessage(String chatId, senderId) async {
+  Future<void> addMessage(String chatId, senderId) async {
     try {
       var headers = {'Content-Type': 'application/json'};
       var url = Uri.parse(

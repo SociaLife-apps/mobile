@@ -11,6 +11,7 @@ import 'package:flutter/widgets.dart';
 
 
 import '../models/chat_model.dart';
+import '../models/user_model.dart';
 import 'auth/auth_screen.dart';
 import 'chat.dart';
 import 'addFriends.dart';
@@ -35,11 +36,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> fetchChatContacts() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     ChatController chatController = Get.put(ChatController());
+    UserController userController = Get.put(UserController());
 
     String? uid = prefs.getString('_id');
     List<Chat> chats = await chatController.userChats(uid!);
 
-    chats.forEach((chat) {
+    chats.forEach((chat) async {
       String id = chat.id;
       List<String> members = chat.members;
 
@@ -47,25 +49,32 @@ class _HomeScreenState extends State<HomeScreen> {
       String? friends =
           members.firstWhere((member) => member != uid, orElse: () => '');
 
+      String username = await userController.getUser(friends);
+
       // Create a map of id and friends
       Map<String, String> contactMap = {
         'id': id,
-        'friends': friends,
+        'friends': username,
       };
 
       // Add the map to the contactList
       contactList.add(contactMap);
     });
-
-    
     
   }
+
   void _navigateToAddFriends() {
     Get.to(AddFriendsScreen());
   }
 
 
-  Future<void> getUsername() async {}
+  Future<void> getUsername(String id) async {
+    UserController userController = Get.put(UserController());
+
+    String username = await userController.getUser(id);
+    
+    print(username);
+  }
 
   @override
   Widget build(BuildContext context) {

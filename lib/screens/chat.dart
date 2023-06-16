@@ -21,7 +21,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   List<String> messagesList = [];
-  String friends = '';
+  
   var data = Get.arguments;
 
   @override
