@@ -1,15 +1,13 @@
-// ignore_for_file: prefer_const_constructors, unused_field, unused_import, unused_local_variable
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' as notifications;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialife_mobile/controllers/chat_controller.dart';
 import 'package:socialife_mobile/controllers/message_controller.dart';
 import 'package:socialife_mobile/models/message_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
-// import 'package:socialife_mobile/controllers/user_controller.dart';
 
 import 'auth/auth_screen.dart';
 
@@ -38,6 +36,11 @@ class _ChatScreenState extends State<ChatScreen> {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
+  Future<void> initializeTimeZones() async {
+    tz_data.initializeTimeZones();
+    final String timeZone = tz.local.name;
+    tz.setLocalLocation(tz.getLocation(timeZone));
+  }
 
   Future<void> scheduleNotification() async {
     const notifications.AndroidNotificationDetails androidPlatformChannelSpecifics =
@@ -55,7 +58,7 @@ class _ChatScreenState extends State<ChatScreen> {
     await flutterLocalNotificationsPlugin.zonedSchedule(
       0,
       'Reminder',
-      'Hey, It\'s been a while since you last reached out to one of your friend. Why not take a moment today to reconnect and catch up? A simple message can make a big difference in nurturing your friendship. Don\'t let more time slip away—reach out and show them you care.',
+      'Hey, It\'s been a while since you last reached out to one of your friends. Why not take a moment today to reconnect and catch up? A simple message can make a big difference in nurturing your friendship. Don\'t let more time slip away—reach out and show them you care.',
       tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
       platformChannelSpecifics,
       androidAllowWhileIdle: true,
@@ -64,10 +67,10 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-
   @override
   void initState() {
     super.initState();
+    initializeTimeZones();
     initializeNotifications();
     fetchMessages();
   }
@@ -96,8 +99,7 @@ class _ChatScreenState extends State<ChatScreen> {
       Map<String, String> messageMap = {
         'text': text,
         'createdAt': relativeTime,
-        'isCurrentUser':
-            message.senderId == prefs.getString('_id') ? 'true' : 'false',
+        'isCurrentUser': message.senderId == prefs.getString('_id') ? 'true' : 'false',
       };
 
       setState(() {
@@ -116,7 +118,6 @@ class _ChatScreenState extends State<ChatScreen> {
     final String lastContactKey = 'last_contact_${data[0]}';
     prefs.setString(lastContactKey, DateTime.now().toIso8601String());
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -141,9 +142,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 final isCurrentUser = message['isCurrentUser'] == 'true';
 
                 return Align(
-                  alignment: isCurrentUser
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
+                  alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
                     margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     padding: EdgeInsets.all(12),
@@ -165,8 +164,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         Text(
                           created!,
                           style: TextStyle(
-                            color:
-                                isCurrentUser ? Colors.white70 : Colors.black54,
+                            color: isCurrentUser ? Colors.white70 : Colors.black54,
                           ),
                         ),
                       ],
@@ -198,8 +196,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: () {
-                    String message =
-                        messageController.addMessageController.text;
+                    String message = messageController.addMessageController.text;
                     if (message.isNotEmpty) {
                       sendMessage(message);
                     }
@@ -219,4 +216,3 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
-

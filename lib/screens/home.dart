@@ -152,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
           final chat = contactList[index];
           final id = chat['id'];
           final friends = chat['friends'];
-          final isOverdue = chat['overdue'] == 'true'; // Add this line to check if the contact is overdue
+          final isOverdue = chat['overdue'] == true; // Add this line to check if the contact is overdue
 
           return ListTile(
             leading: CircleAvatar(
