@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialife_mobile/controllers/chat_controller.dart';
 import 'package:socialife_mobile/controllers/user_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/chat_model.dart';
 import '../models/user_model.dart';
@@ -65,32 +66,58 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchChatContacts() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
     String? uid = prefs.getString('_id');
     List<Chat> chats = await chatController.userChats(uid!);
 
     for (Chat chat in chats) {
       String id = chat.id;
       List<String> members = chat.members;
-
-      // Process the members as needed
-      String? friends =
-          members.firstWhere((member) => member != uid, orElse: () => '');
-
+      String? friends = members.firstWhere((member) => member != uid, orElse: () => '');
       String username = await userController.getUser(friends);
 
+      DateTime lastContactTime = await getLastContactTimeForFriend(id); // Update this line to use the modified method
+
       setState(() {
-        // Create a map of id and friends
         Map<String, String> contactMap = {
           'id': id,
           'friends': username,
         };
 
-        // Add the map to the contactList
+        if (lastContactTime != null && isContactOverdue(lastContactTime)) {
+          contactMap['overdue'] = 'true';
+        } else {
+          contactMap['overdue'] = 'false';
+        }
+
         contactList.add(contactMap);
       });
     }
   }
+
+
+  Future<DateTime> getLastContactTimeForFriend(String friendId) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String lastContactKey = 'last_contact_$friendId';
+
+    final String? lastContactTimeString = prefs.getString(lastContactKey);
+
+    if (lastContactTimeString != null) {
+      final DateTime lastContactTime = DateTime.parse(lastContactTimeString);
+      return lastContactTime;
+    }
+
+    // Return a default value if no last contact time is stored
+    return DateTime(2000); // Change this default value to suit your needs
+  }
+
+
+  bool isContactOverdue(DateTime lastContactTime) {
+    final Duration contactThreshold = Duration(days: 7); // Define the threshold for considering a contact overdue
+    DateTime now = DateTime.now();
+    Duration difference = now.difference(lastContactTime);
+    return difference >= contactThreshold;
+  }
+
 
   void _navigateToAddFriends() {
     Get.to(AddFriendsScreen());
@@ -122,6 +149,8 @@ class _HomeScreenState extends State<HomeScreen> {
           final chat = contactList[index];
           final id = chat['id'];
           final friends = chat['friends'];
+          final isOverdue = chat['overdue'] == 'true'; // Add this line to check if the contact is overdue
+
           return ListTile(
             leading: CircleAvatar(
               child: Icon(Icons.person_rounded),
@@ -136,9 +165,12 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () {
               Get.to(ChatScreen(), arguments: [id, friends]);
             },
+            // Add the warning widget if the contact is overdue
+            trailing: isOverdue ? Icon(Icons.warning, color: Colors.red) : null,
           );
         },
-      ),
+      )
+      ,
       floatingActionButton: FloatingActionButton(
         onPressed: _logout,
         child: Icon(Icons.logout),
