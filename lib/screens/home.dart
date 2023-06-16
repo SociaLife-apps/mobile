@@ -9,7 +9,6 @@ import 'package:socialife_mobile/controllers/chat_controller.dart';
 import 'package:socialife_mobile/controllers/user_controller.dart';
 import 'package:flutter/widgets.dart';
 
-
 import '../models/chat_model.dart';
 import '../models/user_model.dart';
 import 'auth/auth_screen.dart';
@@ -41,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
     String? uid = prefs.getString('_id');
     List<Chat> chats = await chatController.userChats(uid!);
 
-    chats.forEach((chat) async {
+    for (Chat chat in chats) {
       String id = chat.id;
       List<String> members = chat.members;
 
@@ -59,21 +58,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // Add the map to the contactList
       contactList.add(contactMap);
-    });
-    
+    }
+    print(contactList);
   }
 
   void _navigateToAddFriends() {
     Get.to(AddFriendsScreen());
-  }
-
-
-  Future<void> getUsername(String id) async {
-    UserController userController = Get.put(UserController());
-
-    String username = await userController.getUser(id);
-    
-    print(username);
   }
 
   @override

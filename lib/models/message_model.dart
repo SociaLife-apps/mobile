@@ -11,25 +11,25 @@ String messageToJson(List<Message> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class Message {
-  String chatId;
   String senderId;
   String text;
+  DateTime createdAt;
 
   Message({
-    required this.chatId,
     required this.senderId,
     required this.text,
+    required this.createdAt,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) => Message(
-        chatId: json["chatId"],
         senderId: json["senderId"],
         text: json["text"],
+        createdAt: DateTime.parse(json["createdAt"]),
       );
 
   Map<String, dynamic> toJson() => {
-        "chatId": chatId,
         "senderId": senderId,
         "text": text,
+        "createdAt": createdAt.toIso8601String(),
       };
 }

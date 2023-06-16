@@ -9,7 +9,6 @@ import 'package:socialife_mobile/utils/api_endpoints.dart';
 import 'package:http/http.dart' as http;
 
 class MessageController extends GetxController {
-  RxList<Message> messages = RxList<Message>([]);
   TextEditingController addMessageController = TextEditingController();
 
   Future getMessages(String chatId) async {
@@ -23,10 +22,6 @@ class MessageController extends GetxController {
 
       if (response.statusCode == 200) {
         List<Message> messageList = messageFromJson(response.body);
-
-        // List<dynamic> json = jsonDecode(response.body);
-        // List<String>? messageList =
-        //     json.map((item) => item['text']).cast<String>().toList();
 
         return messageList;
       } else {

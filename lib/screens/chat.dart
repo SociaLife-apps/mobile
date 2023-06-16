@@ -1,10 +1,11 @@
-// ignore_for_file: prefer_const_constructors, unused_field, unused_import
+// ignore_for_file: prefer_const_constructors, unused_field, unused_import, unused_local_variable
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialife_mobile/controllers/chat_controller.dart';
 import 'package:socialife_mobile/controllers/message_controller.dart';
+import 'package:socialife_mobile/models/message_model.dart';
 // import 'package:socialife_mobile/controllers/user_controller.dart';
 
 import 'auth/auth_screen.dart';
@@ -18,9 +19,9 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   MessageController messageController = Get.put(MessageController());
+  List<Map<String, String>> messageList = [];
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  List<String> messagesList = [];
   
   var data = Get.arguments;
 
@@ -31,12 +32,27 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> fetchMessages() async {
-    
-    List<String>? messages = await messageController.getMessages(data[0]) as List<String>;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    List<Message> messages = await messageController.getMessages(data[0]);
 
     setState(() {
-      messagesList = messages;
+      messageList.clear(); // Clear the previous messages
+      for (Message message in messages) {
+        String text = message.text;
+        DateTime createdAt = message.createdAt;
+
+        Map<String, String> messageMap = {
+          'text': text,
+          'createdAt': createdAt.toString(),
+        };
+
+        messageList.add(messageMap);
+      }
     });
+
+    print(messageList);
+    
   }
 
   Future<void> sendMessage(String message) async {
@@ -54,19 +70,20 @@ class _ChatScreenState extends State<ChatScreen> {
         title: Text(data[1]),
       ),
       body: ListView.separated(
-        itemCount: messagesList.length,
+        itemCount: messageList.length,
         separatorBuilder: (context, index) => Divider(
           color: Colors.grey,
           height: 1.0,
         ),
         itemBuilder: (context, index) {
-          final chat = messagesList[index];
+          final message = messageList[index];
+          final text = message['text'];
           return ListTile(
             leading: CircleAvatar(
               child: Icon(Icons.person_rounded),
             ),
-            title: Text('nama teman'),
-            subtitle: Text(chat),
+            title: Text('test'),
+            subtitle: Text(text!),
             onTap: () {
               // Navigate to chat page
             },
