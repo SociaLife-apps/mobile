@@ -7,10 +7,13 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialife_mobile/controllers/chat_controller.dart';
 import 'package:socialife_mobile/controllers/user_controller.dart';
+import 'package:flutter/widgets.dart';
+
 
 import '../models/chat_model.dart';
 import 'auth/auth_screen.dart';
 import 'chat.dart';
+import 'addFriends.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -57,6 +60,10 @@ class _HomeScreenState extends State<HomeScreen> {
     
     
   }
+  void _navigateToAddFriends() {
+    Get.to(AddFriendsScreen());
+  }
+
 
   Future<void> getUsername() async {}
 
@@ -65,6 +72,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('SociaLife'),
+        leading: IconButton(
+          icon: Icon(Icons.add),
+          onPressed: _navigateToAddFriends,
+        ),
       ),
       body: ListView.separated(
         itemCount: contactList.length,

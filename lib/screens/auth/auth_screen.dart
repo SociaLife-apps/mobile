@@ -50,14 +50,14 @@ class _AuthScreenState extends State<AuthScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         MaterialButton(
-                          color: !isLogin.value ? Colors.white : Colors.amber,
+                          color: !isLogin.value ? Colors.white : Colors.purple.shade400,
                           onPressed: () {
                             isLogin.value = false;
                           },
                           child: Text('Register'),
                         ),
                         MaterialButton(
-                          color: isLogin.value ? Colors.white : Colors.amber,
+                          color: isLogin.value ? Colors.white : Colors.purple.shade400,
                           onPressed: () {
                             isLogin.value = true;
                           },
