@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialife_mobile/controllers/chat_controller.dart';
 import 'package:socialife_mobile/controllers/user_controller.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/chat_model.dart';
 import '../models/user_model.dart';
@@ -83,6 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         Map<String, String> contactMap = {
           'id': id,
+          'idFriends': friends,
           'friends': username,
         };
 
@@ -152,6 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
         itemBuilder: (context, index) {
           final chat = contactList[index];
           final id = chat['id'];
+          final idFriends = chat['idFriends'];
           final friends = chat['friends'];
           final isOverdue = chat['overdue'] ==
               true; // Add this line to check if the contact is overdue
@@ -168,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             onTap: () {
-              Get.to(ChatScreen(), arguments: [id, friends]);
+              Get.to(ChatScreen(), arguments: [id, friends, idFriends]);
             },
             // Add the warning widget if the contact is overdue
             trailing: isOverdue ? Icon(Icons.warning, color: Colors.red) : null,

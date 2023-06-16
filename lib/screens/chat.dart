@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
@@ -5,12 +7,10 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart'
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:socialife_mobile/controllers/chat_controller.dart';
 import 'package:socialife_mobile/controllers/message_controller.dart';
 import 'package:socialife_mobile/models/message_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
-
-import 'auth/auth_screen.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -20,10 +20,11 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final ScrollController _scrollController = ScrollController();
   MessageController messageController = Get.put(MessageController());
   List<Map<String, String>> messageList = [];
+  IO.Socket? socket;
 
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   notifications.FlutterLocalNotificationsPlugin
       flutterLocalNotificationsPlugin =
       notifications.FlutterLocalNotificationsPlugin();
@@ -76,9 +77,44 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    connectToSocketServer();
+    fetchMessages();
     initializeTimeZones();
     initializeNotifications();
-    fetchMessages();
+  }
+
+  Future<void> connectToSocketServer() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? senderId = prefs.getString('_id');
+
+    socket = IO.io('ws://10.0.2.2:8800', <String, dynamic>{
+      'transports': ['websocket'],
+    });
+
+    socket!.onConnect((_) {
+      print('Socket connected');
+      socket!.emit('new-user-add', senderId);
+    });
+
+    socket!.onDisconnect((_) {
+      print('Socket disconnected');
+    });
+
+    socket!.on('receive-message', (newMessage) {
+      Map<String, dynamic> messageData = Map<String, dynamic>.from(newMessage);
+
+      Map<String, String> messageMap = {
+        'text': messageData['text'] as String,
+        'createdAt': timeago.format(DateTime.now()),
+        'isCurrentUser': messageData['senderId'] == prefs.getString('_id')
+            ? 'true'
+            : 'false',
+      };
+
+      setState(() {
+        messageList.add(messageMap);
+      });
+    });
   }
 
   Future<void> fetchMessages() async {
@@ -121,13 +157,45 @@ class _ChatScreenState extends State<ChatScreen> {
 
     await messageController.addMessage(data[0], senderId);
 
+    String receiverId = data[2];
+    String chatId = data[0];
+
+    Map socketMessage = {
+      'senderId': senderId,
+      'text': message,
+      'chatId': chatId,
+      'receiverId': receiverId,
+    };
+    socket!.emit('send-message', socketMessage);
+
     // Store the current time as the last contact time for the friend
     final String lastContactKey = 'last_contact_${data[0]}';
     prefs.setString(lastContactKey, DateTime.now().toIso8601String());
+
+    Map<String, String> newMessage = {
+      'text': message,
+      'createdAt': timeago.format(DateTime.now()),
+      'isCurrentUser': 'true',
+    };
+
+    setState(() {
+      messageList.add(newMessage);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Scroll to the latest message
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(data[1]),
@@ -136,6 +204,7 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             child: ListView.separated(
+              controller: _scrollController, // Attach the ScrollController
               reverse: false,
               itemCount: messageList.length,
               separatorBuilder: (context, index) => Divider(
