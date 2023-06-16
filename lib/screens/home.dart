@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialife_mobile/controllers/chat_controller.dart';
 import 'package:socialife_mobile/controllers/user_controller.dart';
-import 'package:flutter/widgets.dart';
 
 import '../models/chat_model.dart';
 import '../models/user_model.dart';
@@ -23,8 +22,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  ChatController chatController = Get.put(ChatController());
+  UserController userController = Get.put(UserController());
   List<Map<String, String>> contactList = [];
+
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   @override
   void initState() {
@@ -34,8 +36,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchChatContacts() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    ChatController chatController = Get.put(ChatController());
-    UserController userController = Get.put(UserController());
 
     String? uid = prefs.getString('_id');
     List<Chat> chats = await chatController.userChats(uid!);
@@ -50,20 +50,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
       String username = await userController.getUser(friends);
 
-      // Create a map of id and friends
-      Map<String, String> contactMap = {
-        'id': id,
-        'friends': username,
-      };
+      setState(() {
+        // Create a map of id and friends
+        Map<String, String> contactMap = {
+          'id': id,
+          'friends': username,
+        };
 
-      // Add the map to the contactList
-      contactList.add(contactMap);
+        // Add the map to the contactList
+        contactList.add(contactMap);
+      });
     }
-    print(contactList);
   }
 
   void _navigateToAddFriends() {
     Get.to(AddFriendsScreen());
+  }
+
+  void _logout() async {
+    final SharedPreferences? prefs = await _prefs;
+    prefs?.clear();
+    Get.offAll(AuthScreen());
   }
 
   @override
@@ -72,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text('SociaLife'),
         leading: IconButton(
-          icon: Icon(Icons.add),
+          icon: Icon(Icons.person_add),
           onPressed: _navigateToAddFriends,
         ),
       ),
@@ -90,22 +97,21 @@ class _HomeScreenState extends State<HomeScreen> {
             leading: CircleAvatar(
               child: Icon(Icons.person_rounded),
             ),
-            title: Text(friends!),
+            title: Text(
+              friends!,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
             onTap: () {
-              // Navigate to chat page
               Get.to(ChatScreen(), arguments: [id, friends]);
             },
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          // Perform logout action
-          // logout();
-          final SharedPreferences? prefs = await _prefs;
-          prefs?.clear();
-          Get.offAll(AuthScreen());
-        },
+        onPressed: _logout,
         child: Icon(Icons.logout),
       ),
     );
