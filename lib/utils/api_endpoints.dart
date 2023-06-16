@@ -9,6 +9,7 @@ class _AuthEndPoints {
   final String register = 'auth/register';
   final String login = 'auth/login';
 
+  final String getAllUser = 'user/';
   final String getUser = 'user/';
   final String updateUser = 'user/:';
   final String addFriend = 'user/';

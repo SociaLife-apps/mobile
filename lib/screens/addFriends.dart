@@ -1,14 +1,20 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:socialife_mobile/controllers/user_action.dart';
+import 'package:socialife_mobile/controllers/user_controller.dart';
 import 'package:socialife_mobile/screens/auth/widgets/input_fields.dart';
 
 class AddFriendsScreen extends StatefulWidget{
+  const AddFriendsScreen({super.key});
+
   @override
   State<AddFriendsScreen> createState() => _AddFriendsScreenState();
 }
 class _AddFriendsScreenState extends State<AddFriendsScreen> {
-  UserAction userAction = Get.put(UserAction());
+  UserController userController = Get.put(UserController());
+
+  var data = Get.arguments;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +29,7 @@ class _AddFriendsScreenState extends State<AddFriendsScreen> {
     );
   }
 
+
   Widget friendWidget(){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,13 +40,13 @@ class _AddFriendsScreenState extends State<AddFriendsScreen> {
         ),
         SizedBox(height: 16),
         InputTextFieldWidget(
-          userAction.friendController,
+          userController.friendController,
           'Friend\'s Name',
         ),
         SizedBox(height: 16),
         ElevatedButton(
           onPressed: () {
-            userAction.add_friend();
+            userController.addFriend(data);
           },
           child: Text('Search'),
         ),

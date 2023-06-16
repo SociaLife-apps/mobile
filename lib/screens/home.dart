@@ -92,8 +92,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _navigateToAddFriends() {
-    Get.to(AddFriendsScreen());
+  void _navigateToAddFriends() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? uid = prefs.getString('_id');
+    
+    Get.to(AddFriendsScreen(), arguments: uid);
   }
 
   void _logout() async {
