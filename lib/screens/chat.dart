@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart' as notifications;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'
+    as notifications;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialife_mobile/controllers/chat_controller.dart';
@@ -25,23 +26,26 @@ class _ChatScreenState extends State<ChatScreen> {
   List<Map<String, String>> messageList = [];
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  notifications.FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  notifications.FlutterLocalNotificationsPlugin();
+  notifications.FlutterLocalNotificationsPlugin
+      flutterLocalNotificationsPlugin =
+      notifications.FlutterLocalNotificationsPlugin();
 
   var data = Get.arguments;
 
   Future<void> initializeNotifications() async {
-    const notifications.AndroidInitializationSettings initializationSettingsAndroid =
-    notifications.AndroidInitializationSettings('app_icon');
+    const notifications.AndroidInitializationSettings
+        initializationSettingsAndroid =
+        notifications.AndroidInitializationSettings('app_icon');
     final notifications.InitializationSettings initializationSettings =
-    notifications.InitializationSettings(android: initializationSettingsAndroid);
+        notifications.InitializationSettings(
+            android: initializationSettingsAndroid);
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-
   Future<void> scheduleNotification() async {
-    const notifications.AndroidNotificationDetails androidPlatformChannelSpecifics =
-    notifications.AndroidNotificationDetails(
+    const notifications.AndroidNotificationDetails
+        androidPlatformChannelSpecifics =
+        notifications.AndroidNotificationDetails(
       'channel_id',
       'channel_name',
       importance: notifications.Importance.max,
@@ -50,7 +54,8 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     const notifications.NotificationDetails platformChannelSpecifics =
-    notifications.NotificationDetails(android: androidPlatformChannelSpecifics);
+        notifications.NotificationDetails(
+            android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
       0,
@@ -60,10 +65,9 @@ class _ChatScreenState extends State<ChatScreen> {
       platformChannelSpecifics,
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
-      notifications.UILocalNotificationDateInterpretation.absoluteTime,
+          notifications.UILocalNotificationDateInterpretation.absoluteTime,
     );
   }
-
 
   @override
   void initState() {
@@ -116,7 +120,6 @@ class _ChatScreenState extends State<ChatScreen> {
     final String lastContactKey = 'last_contact_${data[0]}';
     prefs.setString(lastContactKey, DateTime.now().toIso8601String());
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -219,4 +222,3 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
-

@@ -50,7 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
         context: context,
         builder: (context) => AlertDialog(
           title: Text('Take a Break'),
-          content: Text('It seems like you\'ve been enjoying our app for 15 minutes straight! We encourage you to take a moment to rest and recharge. Remember, a healthy balance is key to a productive and enjoyable experience. Feel free to resume your activities once you\'re ready. Thank you for using our app!'),
+          content: Text(
+              'It seems like you\'ve been enjoying our app for 15 minutes straight! We encourage you to take a moment to rest and recharge. Remember, a healthy balance is key to a productive and enjoyable experience. Feel free to resume your activities once you\'re ready. Thank you for using our app!'),
           actions: [
             TextButton(
               child: Text('OK'),
@@ -72,10 +73,12 @@ class _HomeScreenState extends State<HomeScreen> {
     for (Chat chat in chats) {
       String id = chat.id;
       List<String> members = chat.members;
-      String? friends = members.firstWhere((member) => member != uid, orElse: () => '');
+      String? friends =
+          members.firstWhere((member) => member != uid, orElse: () => '');
       String username = await userController.getUser(friends);
 
-      DateTime lastContactTime = await getLastContactTimeForFriend(id); // Update this line to use the modified method
+      DateTime lastContactTime = await getLastContactTimeForFriend(
+          id); // Update this line to use the modified method
 
       setState(() {
         Map<String, String> contactMap = {
@@ -94,7 +97,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
   Future<DateTime> getLastContactTimeForFriend(String friendId) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String lastContactKey = 'last_contact_$friendId';
@@ -110,19 +112,18 @@ class _HomeScreenState extends State<HomeScreen> {
     return DateTime(2000); // Change this default value to suit your needs
   }
 
-
   bool isContactOverdue(DateTime lastContactTime) {
-    final Duration contactThreshold = Duration(days: 7); // Define the threshold for considering a contact overdue
+    final Duration contactThreshold = Duration(
+        days: 7); // Define the threshold for considering a contact overdue
     DateTime now = DateTime.now();
     Duration difference = now.difference(lastContactTime);
     return difference >= contactThreshold;
   }
 
-
   void _navigateToAddFriends() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? uid = prefs.getString('_id');
-    
+
     Get.to(AddFriendsScreen(), arguments: uid);
   }
 
@@ -152,7 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
           final chat = contactList[index];
           final id = chat['id'];
           final friends = chat['friends'];
-          final isOverdue = chat['overdue'] == 'true'; // Add this line to check if the contact is overdue
+          final isOverdue = chat['overdue'] ==
+              'true'; // Add this line to check if the contact is overdue
 
           return ListTile(
             leading: CircleAvatar(
@@ -172,8 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
             trailing: isOverdue ? Icon(Icons.warning, color: Colors.red) : null,
           );
         },
-      )
-      ,
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _logout,
         child: Icon(Icons.logout),
