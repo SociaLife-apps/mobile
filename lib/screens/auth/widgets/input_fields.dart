@@ -5,13 +5,16 @@ import 'package:flutter/material.dart';
 class InputTextFieldWidget extends StatelessWidget {
   final TextEditingController textEditingController;
   final String hintText;
-  InputTextFieldWidget(this.textEditingController, this.hintText);
+  final bool obscureText;
+
+  InputTextFieldWidget(this.textEditingController, this.hintText, this.obscureText);
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 46,
       child: TextField(
         controller: textEditingController,
+        obscureText: obscureText,
         decoration: InputDecoration(
             alignLabelWithHint: true,
             focusedBorder: UnderlineInputBorder(

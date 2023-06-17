@@ -81,17 +81,17 @@ class _AuthScreenState extends State<AuthScreen> {
     return Column(
       children: [
         InputTextFieldWidget(
-            registrationController.usernameController, 'Username'),
+            registrationController.usernameController, 'Username', false),
         SizedBox(
           height: 20,
         ),
         InputTextFieldWidget(
-            registrationController.passwordController, 'Password'),
+            registrationController.passwordController, 'Password', true),
         SizedBox(
           height: 20,
         ),
         InputTextFieldWidget(
-            registrationController.confirmPassController, 'Confirm Password'),
+            registrationController.confirmPassController, 'Confirm Password', true),
         SizedBox(
           height: 20,
         ),
@@ -109,11 +109,11 @@ class _AuthScreenState extends State<AuthScreen> {
         SizedBox(
           height: 20,
         ),
-        InputTextFieldWidget(loginController.usernameController, 'Username'),
+        InputTextFieldWidget(loginController.usernameController, 'Username', false),
         SizedBox(
           height: 20,
         ),
-        InputTextFieldWidget(loginController.passwordController, 'Password'),
+        InputTextFieldWidget(loginController.passwordController, 'Password', true),
         SizedBox(
           height: 20,
         ),

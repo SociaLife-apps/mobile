@@ -42,6 +42,7 @@ class _AddFriendsScreenState extends State<AddFriendsScreen> {
         InputTextFieldWidget(
           userController.friendController,
           'Friend\'s Name',
+          false
         ),
         SizedBox(height: 16),
         ElevatedButton(

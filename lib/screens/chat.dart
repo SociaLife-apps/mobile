@@ -103,12 +103,15 @@ class _ChatScreenState extends State<ChatScreen> {
     socket!.on('receive-message', (newMessage) {
       Map<String, dynamic> messageData = Map<String, dynamic>.from(newMessage);
 
+      String text = messageData['text'] as String;
+      String createdAt = timeago.format(DateTime.now());
+      String isCurrentUser =
+          messageData['senderId'] == prefs.getString('_id') ? 'true' : 'false';
+
       Map<String, String> messageMap = {
-        'text': messageData['text'] as String,
-        'createdAt': timeago.format(DateTime.now()),
-        'isCurrentUser': messageData['senderId'] == prefs.getString('_id')
-            ? 'true'
-            : 'false',
+        'text': text,
+        'createdAt': createdAt,
+        'isCurrentUser': isCurrentUser,
       };
 
       setState(() {

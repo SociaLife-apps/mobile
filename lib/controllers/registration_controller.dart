@@ -32,18 +32,18 @@ class RegistrationController extends GetxController {
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
-        if (json['user']['__v'] == 0) {
-          var token = json['token'];
-          print(token);
-          final SharedPreferences? prefs = await _prefs;
+        var user = json['user'];
 
-          await prefs?.setString('token', token);
-          usernameController.clear();
-          passwordController.clear();
-          Get.off(const HomeScreen());
-        } else {
-          throw jsonDecode(response.body)["message"] ?? "Unknown error ocured";
-        }
+        final SharedPreferences? prefs = await _prefs;
+
+        await prefs?.setString('username', user['username']);
+        await prefs?.setString('_id', user['_id']);
+
+        usernameController.clear();
+        passwordController.clear();
+        confirmPassController.clear();
+
+        Get.off(const HomeScreen());
       } else {
         throw jsonDecode(response.body)["message"] ?? "Unknown error ocured";
       }
