@@ -21,6 +21,7 @@ class _AddFriendsScreenState extends State<AddFriendsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Friends'),
+        backgroundColor: Colors.purple[400],
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -49,6 +50,9 @@ class _AddFriendsScreenState extends State<AddFriendsScreen> {
           onPressed: () {
             userController.addFriend(data);
           },
+          style: ElevatedButton.styleFrom(
+            primary: Colors.purple[400], // Change the button color to purple
+          ),
           child: Text('Search'),
         ),
       ],
