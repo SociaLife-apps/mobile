@@ -24,6 +24,8 @@ class ChatController extends GetxController {
           await http.post(url, body: jsonEncode(body), headers: headers);
       if (response.statusCode == 200) {
         return true;
+      } else {
+        throw jsonDecode(response.body) ?? "Unknown error ocured";
       }
     } catch (e) {
       Get.back();

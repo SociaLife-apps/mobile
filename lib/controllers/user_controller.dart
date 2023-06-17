@@ -1,4 +1,4 @@
-// ignore_for_file: dead_code, prefer_const_constructors, avoid_print
+// ignore_for_file: dead_code, prefer_const_constructors, avoid_print, prefer_interpolation_to_compose_strings
 
 import 'dart:convert';
 

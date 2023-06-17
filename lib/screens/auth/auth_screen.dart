@@ -18,7 +18,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   LoginController loginController = Get.put(LoginController());
 
-  var isLogin = false.obs;
+  var isLogin = true.obs;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,12 +35,10 @@ class _AuthScreenState extends State<AuthScreen> {
                       height: 30,
                     ),
                     Container(
-                      child: Text(
-                        'SociaLife',
-                        style: TextStyle(
-                            fontSize: 30,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400),
+                      child: Image.asset(
+                        'assets/images/socialife_logo.png', // Replace with your image asset path
+                        width: 150,
+                        height: 150,
                       ),
                     ),
                     SizedBox(
