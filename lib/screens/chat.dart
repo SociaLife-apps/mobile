@@ -66,7 +66,7 @@ class _ChatScreenState extends State<ChatScreen> {
       0,
       'Reminder',
       'Hey, It\'s been a while since you last reached out to one of your friends. Why not take a moment today to reconnect and catch up? A simple message can make a big difference in nurturing your friendship. Don\'t let more time slip away—reach out and show them you care.',
-      tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+      tz.TZDateTime.now(tz.local).add(const Duration(seconds: 1)),
       platformChannelSpecifics,
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:

@@ -52,7 +52,7 @@ class ChatController extends GetxController {
 
         return chatList;
       } else {
-        throw jsonDecode(response.body)["message"] ?? "Unknown error ocured";
+        throw jsonDecode(response.body) ?? "Unknown error ocured";
       }
     } catch (e) {
       Get.back();

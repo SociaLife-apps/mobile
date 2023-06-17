@@ -30,7 +30,7 @@ class UserController extends GetxController {
 
         return user.username;
       } else {
-        throw jsonDecode(response.body)["message"] ?? "Unknown error ocured";
+        throw jsonDecode(response.body) ?? "Unknown error ocured";
       }
     } catch (e) {
       Get.back();
@@ -58,6 +58,8 @@ class UserController extends GetxController {
         List<AllUser> userList = allUserFromJson(response.body);
 
         return userList;
+      } else {
+        throw jsonDecode(response.body) ?? "Unknown error ocured";
       }
     } catch (e) {
       Get.back();
@@ -85,24 +87,22 @@ class UserController extends GetxController {
           break;
         }
       }
-      print(idFound);
       if (idFound != 'false') {
         var headers = {'Content-Type': 'application/json'};
-        print('test');
+        
         var url = Uri.parse(ApiEndpoints.baseUrl +
             ApiEndpoints.authEndPoints.addFriend +
             idFound + '/add');
-        print(url);
 
         Map body = {'_id': id};
-        print(body);
 
         http.Response response =
             await http.put(url, body: jsonEncode(body), headers: headers);
-        print(response.body);
-        print(response.statusCode);
+
         if (response.statusCode == 200) {
           print(await chatController.createChat(id, idFound));
+        } else {
+          throw jsonDecode(response.body) ?? "Unknown error ocured";
         }
       }
 

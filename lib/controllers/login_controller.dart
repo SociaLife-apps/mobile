@@ -26,7 +26,6 @@ class LoginController extends GetxController {
       };
       http.Response response =
           await http.post(url, body: jsonEncode(body), headers: headers);
-
       if (response.statusCode == 200) {
 
         final json = jsonDecode(response.body);
@@ -43,7 +42,7 @@ class LoginController extends GetxController {
 
         Get.off(HomeScreen());
       } else {
-        throw jsonDecode(response.body)["message"] ?? "Unknown error ocured";
+        throw jsonDecode(response.body);
       }
     } catch (e) {
       Get.back();

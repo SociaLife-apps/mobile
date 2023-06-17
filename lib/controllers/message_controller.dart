@@ -25,7 +25,7 @@ class MessageController extends GetxController {
 
         return messageList;
       } else {
-        throw jsonDecode(response.body)['message'] ?? "Unknown error ocured";
+        throw jsonDecode(response.body) ?? "Unknown error ocured";
       }
     } catch (e) {
       Get.back();
@@ -56,7 +56,7 @@ class MessageController extends GetxController {
       if (response.statusCode == 200) {
         addMessageController.clear();
       } else {
-        throw jsonDecode(response.body)["message"] ?? "Unknown error ocured";
+        throw jsonDecode(response.body) ?? "Unknown error ocured";
       }
     } catch (e) {
       Get.back();

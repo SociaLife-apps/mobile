@@ -45,7 +45,7 @@ class RegistrationController extends GetxController {
 
         Get.off(const HomeScreen());
       } else {
-        throw jsonDecode(response.body)["message"] ?? "Unknown error ocured";
+        throw jsonDecode(response.body) ?? "Unknown error ocured";
       }
     } catch (e) {
       Get.back();
