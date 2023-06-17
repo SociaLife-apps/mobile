@@ -142,6 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
           icon: Icon(Icons.person_add),
           onPressed: _navigateToAddFriends,
         ),
+        backgroundColor: Colors.purple[400],
       ),
       body: ListView.separated(
         itemCount: contactList.length,
@@ -173,12 +174,14 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             // Add the warning widget if the contact is overdue
             trailing: isOverdue ? Icon(Icons.warning, color: Colors.red) : null,
+
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _logout,
         child: Icon(Icons.logout),
+        backgroundColor: Colors.purple[400],
       ),
     );
   }

@@ -212,7 +212,9 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(data[1]),
+        backgroundColor: Colors.purple[400],
       ),
+
       body: Column(
         children: [
           Expanded(
@@ -238,7 +240,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isCurrentUser ? Colors.blue : Colors.grey[300],
+                      color: isCurrentUser ? Colors.purple[400] : Colors.grey[300],
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Column(
@@ -298,6 +300,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
+                    primary: Colors.purple[400],
                   ),
                   child: Text('Send'),
                 ),
