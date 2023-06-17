@@ -114,9 +114,11 @@ class _ChatScreenState extends State<ChatScreen> {
         'isCurrentUser': isCurrentUser,
       };
 
-      setState(() {
-        messageList.add(messageMap);
-      });
+      if (mounted) {
+        setState(() {
+          messageList.add(messageMap);
+        });
+      }
     });
   }
 
@@ -148,9 +150,11 @@ class _ChatScreenState extends State<ChatScreen> {
             message.senderId == prefs.getString('_id') ? 'true' : 'false',
       };
 
-      setState(() {
-        messageList.add(messageMap);
-      });
+      if (mounted) {
+        setState(() {
+          messageList.add(messageMap);
+        });
+      }
     }
   }
 
@@ -185,6 +189,12 @@ class _ChatScreenState extends State<ChatScreen> {
       messageList.add(newMessage);
     });
   }
+
+  // @override
+  // void dispose() {
+  //   socket?.disconnect(); // Disconnect the socket when the widget is disposed
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
